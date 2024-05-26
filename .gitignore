@@ -4,3 +4,6 @@
 .latex/**/*.out
 .latex/**/*.pdf
 .latex/**/*.toc
+.latex/**/*.bbl
+
+.venv/

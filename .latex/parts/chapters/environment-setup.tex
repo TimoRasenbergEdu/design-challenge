@@ -1,0 +1,91 @@
+Thus far, we have discussed the general structure of the system, as well its
+methods, data requirements, and ethical aspects. However, time constraints 
+will not allow us to create a version of the system that can be applied to
+any or even multiple games.
+
+Therefore, we will initially focus on creating a system that can perform
+as described on a single game. This game will be chosen based on its
+feasibility, popularity, and potential for educational value.
+
+\section{Atari}\label{sec:environment-setup-atari}
+The Gymnasium library, created by OpenAI, is a toolkit for developing and
+comparing reinforcement learning algorithms. It includes a wide variety of
+environments, including the Atari games. These games are simple to understand,
+but can be difficult to master, making them suitable for both casual and
+competitive play. They also have potential for educational value, such as
+teaching problem-solving skills and strategy. Therefore, we will use this
+library to select a game to focus on. 
+
+Feedback from Q. Zhao indicated that the game must not be too well-known, as
+this could lead to finding existing \gls{rl} solutions for the game. Therefore,
+some of the games that we will consider are:
+
+\begin{itemize}
+    \item Berzerk: `You are stuck in a maze with evil robots. You must destroy
+        them and avoid touching the walls of the maze, as this will kill you.
+        You may be awarded extra lives after scoring a sufficient number of
+        points, depending on the game mode.You may also be chased by an
+        undefeatable enemy, Evil Otto, that you must avoid.'\cite{berzerk-gym}
+    \item Gopher: `Gophers have launched a merciless assault on your carrot
+        patch. Grab your shovel and fill those holes before they tunnel out and
+        eat your choice carrots. With no time to run back to the barn for more
+        seeds to plant, it's a good thing that crazy duck keeps flying by
+        dropping them. But it's awfully tricky to catch a seed, plant it, and
+        still keep those persistent Gophers away. Just when you think
+        everything's under control, they get faster and hungrier! Take a deep
+        breath, and let the battle begin.'\cite{gopher-desc}\cite{gopher-gym}
+    \item Q*bert: `You are Q*bert. Your goal is to change the color of all the
+        cubes on the pyramid to the pyramid's 'destination' color. To do this,
+        you must hop on each cube on the pyramid one at a time while avoiding
+        nasty creatures that lurk there.'\cite{qbert-gym}
+\end{itemize}
+
+These games are not as well-known as, for example, Tetris, which was
+considered initially. There is difference in complexity between the games,
+with Q*bert being the simplest, and Berzerk being the most complex. This
+difference in complexity is due to the number of actions that can be taken,
+the number of states that can be observed, and the number of rewards that can
+be received.
+
+Since processing this large of a state space is already a challenge and
+computationally expensive, we will choose Q*bert as the game to focus on. If
+time allows, we may also consider finding a solution for Berzerk, or creating
+Q*bert ourselves, such that we can have more control over the game's rules. As
+mentioned in \hyperref[sec:methodology-methods]{methodology methods}, this
+would involve the usage of HTML, CSS, and JavaScript, or a similar technology.
+
+\section{Dependencies and Tools}\label{sec:environment-setup-dependencies-tools}
+To create the system, we will use the following tools and libraries:
+
+\begin{itemize}
+    \item Python: A programming language that is widely used in the field of
+        machine learning and artificial intelligence.
+    \item Gymnasium (Atari): A toolkit for developing and comparing
+        reinforcement learning algorithms. It includes a wide variety of
+        environments, including the Atari games.
+        \begin{itemize}
+            \item Ale-py: A Python wrapper for the Arcade Learning Environment
+                (ALE), which is used to interface with the Atari games.
+        \end{itemize}
+    \item TensorFlow: An open-source machine learning library developed by
+        Google. It is widely used in the field of deep learning.
+        \begin{itemize}
+            \item CUDA: A parallel computing platform and application
+                programming interface model created by NVIDIA.
+            \item cuDNN: A GPU-accelerated library for deep neural networks.
+        \end{itemize}
+    \item Keras: A high-level neural networks API, written in Python and
+        capable of running on top of TensorFlow.
+    \item Docker: A platform for developing, shipping, and running applications
+        in containers.
+    \item Other Python libraries: NumPy, Matplotlib, etc.
+\end{itemize}
+
+Specifically, we will use Python 3.11, since ale-py is not compatible with
+Python 3.12.
+
+For running TensorFlow on a GPU, we will use a pre-built Docker image that
+includes all the necessary dependencies. This will allow us to avoid the
+complexity of installing and configuring the dependencies manually. We will
+also use Docker to create a container for the system, which will make it easy
+to deploy and run the system.
