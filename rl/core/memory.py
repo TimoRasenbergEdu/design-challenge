@@ -3,9 +3,9 @@ from collections import deque
 
 
 class Buffer:
-    def __init__(self, max_size, iterable=[]):
+    def __init__(self, max_size):
         self.max_size = max_size
-        self.buffer = deque(iterable, maxlen=max_size)
+        self.buffer = deque(maxlen=max_size)
 
     def append(self, item):
         self.buffer.append(item)
@@ -27,10 +27,10 @@ class Buffer:
 
 
 class Memory:
-    def __init__(self, max_size: int, memory=[], error=[]) -> None:
+    def __init__(self, max_size: int) -> None:
         self.max_size = max_size
-        self.memory = Buffer(max_size, memory)
-        self.error = Buffer(max_size, error)
+        self.memory = Buffer(max_size)
+        self.error = Buffer(max_size)
 
     def append_memory(self, item) -> None:
         self.memory.append(item)
@@ -48,16 +48,9 @@ class Memory:
         raise NotImplementedError
 
     def config(self) -> dict:
-        memory = [
-            (state.tolist(), action, reward, next_state.tolist(), done)
-            for state, action, reward, next_state, done in self.memory.buffer
-        ]
-        error = list(self.error.buffer)
-
         return {
             'memory_size': self.max_size,
-            'memory_buffer': memory,
-            'error_buffer': error
+            'last_memory_size': len(self.memory),
         }
 
     def __len__(self) -> int:
@@ -65,8 +58,8 @@ class Memory:
 
 
 class SequentialMemory(Memory):
-    def __init__(self, max_size: int, memory=[], error=[]) -> None:
-        super().__init__(max_size, memory, error)
+    def __init__(self, max_size: int) -> None:
+        super().__init__(max_size)
 
     def sample(self, batch_size: int) -> list:
         idx = np.random.choice(len(self.memory), batch_size, replace=False)

@@ -4,8 +4,7 @@ SCRIPT_NAME=rl/ddqn-qbert.py
 
 .PHONY: build
 build:
-	sudo docker build -t $(IMAGE_NAME) .
-
+	sudo docker build --no-cache -t $(IMAGE_NAME) .
 .PHONY: run
 run:
 	sudo docker run --gpus all -it --rm -v $(LOCAL_DIR):/app $(IMAGE_NAME) python /app/$(SCRIPT_NAME)

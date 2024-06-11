@@ -10,11 +10,13 @@ from core.memory import Memory
 
 class DDQNAgent(Agent):
     def __init__(self, env: Env, model: Sequential, policy: Policy,
-                 memory: Memory, preprocessing=None, reward_fn=None,
-                 episodes=2000, episode_start=0, batch_size=64, gamma=0.99,
-                 alpha=0.6, beta=0.4, target_update_steps=5000, replay_steps=4,
+                 memory: Memory, create_env, preprocessing=None,
+                 reward_fn=None, episodes=2000, episode_start=0, t_warm_up=0,
+                 batch_size=32, gamma=0.99, alpha=0.6, beta=0.4,
+                 target_update_steps=5000, replay_steps=4,
                  prioritized_exp_replay=False) -> None:
-        super().__init__(env.spec.id, model, policy, preprocessing, reward_fn)
+        super().__init__(env.spec.id, create_env, model, policy, preprocessing,
+                         reward_fn)
         self.env = env
         self.brain = Brain(model)
         self.target_brain = self.brain.copy()
@@ -26,6 +28,7 @@ class DDQNAgent(Agent):
         self.episodes = episodes
         self.episode_start = episode_start
         self.current_episode = episode_start
+        self.t_warm_up = t_warm_up
         self.batch_size = batch_size
         self.gamma = gamma
         self.alpha = alpha
@@ -38,6 +41,28 @@ class DDQNAgent(Agent):
 
     def fit(self) -> None:
         try:
+            state, info = self.env.reset()
+            for i in range(self.t_warm_up):
+                print(f'Warm-up step {i+1}/{self.t_warm_up}.')
+                action = self.action(state)
+                step = self.env.step(action)
+                next_state, reward, terminated, truncated, next_info = step
+
+                if self.reward_fn is not None:
+                    reward = self.reward_fn(state, info, next_state,
+                                            reward, terminated, truncated,
+                                            next_info)
+
+                done = terminated or truncated
+
+                self.remember(state, action, reward, next_state, done)
+
+                state = next_state
+                info = next_info
+
+                if done:
+                    state, info = self.env.reset()
+
             metrics = []
             steps = 0
             for i in range(self.episode_start, self.episodes):
@@ -99,6 +124,7 @@ class DDQNAgent(Agent):
         except KeyboardInterrupt:
             print('Training interrupted.')
         except Exception as e:
+            print(f'An error occurred during training: {e}.')
             raise e
         finally:
             self.metrics = metrics

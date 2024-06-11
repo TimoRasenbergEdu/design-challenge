@@ -1,5 +1,7 @@
 gymnasium
 gymnasium[atari]
 gymnasium[accept-rom-license]
+# gymnasium[other]
+opencv-python
 tensorflow
 keras

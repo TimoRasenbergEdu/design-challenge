@@ -1,6 +1,5 @@
 import json
 import os
-import gymnasium as gym
 import keras
 
 from core.agents.ddqn import DDQNAgent
@@ -11,18 +10,17 @@ from core.policy import GreedyPolicy, EpsilonGreedyPolicy, EpsilonDecayPolicy, S
 
 class AgentFactory:
     @staticmethod
-    def load(path: str, preprocessing=None, reward_fn=None):
+    def load(path: str, create_env, preprocessing=None, reward_fn=None):
         with open(os.path.join(path, 'config.json')) as f:
             config = json.load(f)
 
-        env = gym.make(config['env'], obs_type='grayscale')
+        env = create_env(config['env'], (126, 96), 4)
         model = keras.models.load_model(os.path.join(path, 'model.keras'))
 
         memory = config['memory']
         memory_size = memory['memory_size']
-        memory_buffer = memory['memory_buffer']
-        error_buffer = memory['error_buffer']
-        memory = SequentialMemory(memory_size, memory_buffer, error_buffer)
+        t_warm_up = memory['last_memory_size']
+        memory = SequentialMemory(memory_size)
 
         episodes = config['episodes']
         episode_start = config['last_episode']
@@ -59,18 +57,19 @@ class AgentFactory:
 
         algorithm = config['algorithm']
         if algorithm == 'DQN':
-            return DQNAgent(env, model, policy, memory,
+            return DQNAgent(env, model, policy, memory, create_env,
                             preprocessing=preprocessing, reward_fn=reward_fn,
                             episodes=episodes, episode_start=episode_start,
-                            batch_size=batch_size, gamma=gamma, alpha=alpha,
-                            beta=beta, replay_steps=replay_steps,
+                            t_warm_up=t_warm_up, batch_size=batch_size,
+                            gamma=gamma, alpha=alpha, beta=beta,
+                            replay_steps=replay_steps,
                             prioritized_exp_replay=prioritized_exp_replay)
         elif algorithm == 'DDQN':
-            return DDQNAgent(env, model, policy, memory,
+            return DDQNAgent(env, model, policy, memory, create_env,
                              preprocessing=preprocessing, reward_fn=reward_fn,
                              episodes=episodes, episode_start=episode_start,
-                             batch_size=batch_size, gamma=gamma, alpha=alpha,
-                             beta=beta,
+                             t_warm_up=t_warm_up, batch_size=batch_size,
+                             gamma=gamma, alpha=alpha, beta=beta,
                              target_update_steps=target_update_steps,
                              replay_steps=replay_steps,
                              prioritized_exp_replay=prioritized_exp_replay)

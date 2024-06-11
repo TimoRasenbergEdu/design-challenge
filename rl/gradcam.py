@@ -6,6 +6,21 @@ import matplotlib as mpl
 import gymnasium as gym
 from keras import Input
 from keras.models import Model
+from gymnasium.wrappers import ResizeObservation, FrameStack
+
+
+class TransposeFrame(gym.ObservationWrapper):
+    def __init__(self, env):
+        super(TransposeFrame, self).__init__(env)
+        self.observation_space = gym.spaces.Box(
+            low=0,
+            high=255,
+            shape=(126, 96, 12),
+            dtype=np.uint8
+        )
+
+    def observation(self, observation):
+        return np.transpose(observation, (1, 2, 3, 0)).reshape(126, 96, -1)
 
 
 def jet_heatmap(heatmap, img_array, alpha):
@@ -19,7 +34,8 @@ def jet_heatmap(heatmap, img_array, alpha):
     jet_heatmap = jet_heatmap.resize((img_array.shape[1], img_array.shape[0]))
     jet_heatmap = keras.utils.img_to_array(jet_heatmap)
 
-    superimposed_img = jet_heatmap * alpha + np.stack([img_array] * 3, axis=-1)
+    # superimposed_img = jet_heatmap * alpha + np.stack([img_array] * 3, axis=-1)
+    superimposed_img = jet_heatmap
     return keras.utils.array_to_img(superimposed_img)
 
 
@@ -60,15 +76,17 @@ def gradcam_img(img_array, model, last_conv_layer_name, alpha=0.01):
     return jet_heatmap(heatmap, img_array, alpha)
 
 
-for dir in ['05-06-2024-20-12-24']:
+for dir in ['10-06-2024-02-29-53']:
     path = os.path.join('rl/history', dir)
     model = keras.models.load_model(os.path.join(path, 'model.keras'))
 
-    model.summary()
-
     states = []
 
-    env = gym.make("ALE/Qbert-v5", obs_type='grayscale')
+    env = gym.make("ALE/Qbert-v5")
+    env = ResizeObservation(env, (126, 96))
+    env = FrameStack(env, 4)
+    env = TransposeFrame(env)
+
     state, _ = env.reset()
 
     while True:
@@ -86,5 +104,5 @@ for dir in ['05-06-2024-20-12-24']:
     random_state_idx = np.random.choice(len(states), 10)
     for i in random_state_idx:
         img_array = states[i]
-        gradcam = gradcam_img(img_array, model, 'conv2d_2')
+        gradcam = gradcam_img(img_array, model, 'conv2d_1')
         gradcam.save(f'gradcam_{i}.png')

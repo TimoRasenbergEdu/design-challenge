@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 src_path = 'rl/history'
 # for dir in os.listdir(src_path):
-for dir in ['05-06-2024-20-12-24']:
+for dir in ['10-06-2024-14-18-17']:
     if dir == '.old':
         continue
 

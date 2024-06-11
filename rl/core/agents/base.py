@@ -1,6 +1,5 @@
 import os
 import json
-import gymnasium as gym
 from datetime import datetime
 from keras import Sequential
 
@@ -9,9 +8,10 @@ from core.brain import Brain
 
 
 class Agent:
-    def __init__(self, envName: str, model: Sequential, policy: Policy,
-                 preprocessing=None, reward_fn=None) -> None:
-        self.envName = envName
+    def __init__(self, env_id: str, create_env, model: Sequential,
+                 policy: Policy, preprocessing=None, reward_fn=None) -> None:
+        self.env_id = env_id
+        self.create_env = create_env
         self.brain = Brain(model)
         self.policy = policy
         self.preprocessing = preprocessing
@@ -27,10 +27,9 @@ class Agent:
         policy = GreedyPolicy()
 
         if visualize:
-            env = gym.make(self.envName, render_mode='human',
-                           obs_type='grayscale')
+            env = self.create_env(self.env_id, (126, 96), 4, render=True)
         else:
-            env = gym.make(self.envName, obs_type='grayscale')
+            env = self.create_env(self.env_id, (126, 96), 4)
 
         state, info = env.reset()
 
