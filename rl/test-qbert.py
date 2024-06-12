@@ -52,33 +52,33 @@ def build_model(state_shape, n_actions):
 
 env = gym.make("ALE/Qbert-v5", render_mode='rgb_array')
 env = ResizeObservation(env, (126, 96))
-env = FrameStack(env, 4)
-env = TransposeFrame(env)
+# env = FrameStack(env, 4)
+# env = TransposeFrame(env)
+
+# print(env.observation_space.shape)
 
 model = build_model(env.observation_space.shape, env.action_space.n)
 
-model.summary()
+state, info = env.reset()
 
+lives = info['lives']
+for i in range(1):
+    j = 0
+    while True:
+        action = env.action_space.sample()
+        state, reward, terminated, truncated, info = env.step(action)
 
+        print(state.shape)
 
-# state, info = env.reset()
+        Image.fromarray(state).save(f'./qbert_{i}_{j}.png')
 
-# lives = info['lives']
-# for i in range(1):
-#     j = 0
-#     while True:
-#         action = env.action_space.sample()
-#         state, reward, terminated, truncated, info = env.step(action)
+        if info['lives'] < lives:
+            lives = info['lives']
+            reward -= 100
 
-#         Image.fromarray(state).save(f'./qbert_{i}_{j}.png')
+        print(state.shape, reward, terminated, truncated, info)
 
-#         if info['lives'] < lives:
-#             lives = info['lives']
-#             reward -= 100
+        j += 1
 
-#         print(state.shape, reward, terminated, truncated, info)
-
-#         j += 1
-
-#         if terminated or truncated:
-#             break
+        if terminated or truncated:
+            break

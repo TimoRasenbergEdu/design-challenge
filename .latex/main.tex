@@ -9,7 +9,12 @@
 \usepackage{tocbibind}
 \usepackage{cleveref}
 \usepackage{booktabs}
-\usepackage[table,xcdraw]{xcolor}
+\usepackage{pgf, tikz}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{amsmath}
+
+\DeclareMathOperator{\argmax}{argmax}
 
 \pagestyle{fancy}
 
@@ -32,21 +37,14 @@
 \chapter{Enviroment Setup}\label{ch:environment-setup}
 \input{parts/chapters/environment-setup.tex}
 
-\chapter{Deep Q-Learning}\label{ch:dqn}
-\input{parts/chapters/dqn.tex}
+\chapter{Stable Baselines}\label{ch:stable-baselines}
+\input{parts/chapters/stable-baselines.tex}
 
-% Strucutre of the project:
-% Stable Baselines (Baseline)
-% Environment
-    % State Representation
-        % RGB-state
-        % Grayscale-state
-        % RAM-state
-        % Image Stacking
-    % Reward shaping
-    % DQN
-    % DDQN
-    % PPO
+\chapter{Environment}\label{ch:environment}
+\input{parts/chapters/environment/main.tex}
+
+\chapter{Agent}\label{ch:agent}
+\input{parts/chapters/agent/main.tex}
 
 \printnoidxglossaries{}
 

@@ -1,0 +1,14 @@
+The default state representation for the Q*bert environment is the
+\gls{rgb}-state, which is a 3-dimensional array of shape $210 \times 160 \times
+3$. Since the \gls{rgb}-state is too large to be processed by a neural network,
+we will use a \gls{cnn} to process the state, which will reduce the
+dimensionality of the state through the use of convolutional layers.
+
+\subsection{Scaling}\label{sec:environment-state-representation-scaling}
+\input{parts/chapters/environment/state-representation/scaling/main.tex}
+
+\subsection{RAM-state}\label{sec:environment-state-representation-ram-state}
+\input{parts/chapters/environment/state-representation/ram-state.tex}
+
+\subsection{Image Stacking}\label{sec:environment-state-representation-image-stacking}
+\input{parts/chapters/environment/state-representation/image-stacking.tex}

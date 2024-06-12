@@ -1,0 +1,19 @@
+As we will see in the following sections, the state representation of the
+environment is a crucial aspect of the learning process. If the state
+representation is too large, the learning process will be slow, and the agent
+will require more samples to learn. On the other hand, if the state
+representation is too small, the agent will not be able to learn the
+environment's dynamics.
+
+We will come to find that training a \gls{cnn} on the \gls{rgb}-state is
+computationally expensive, and the agent will require a more samples to learn
+from the environment then feasible for this project. To mitigate this issue, we
+will scale down the state representation to a more manageable size. For this
+scaled-down state representation, we will consider two different
+representations: the \gls{rgb}-state and the grayscale-state.
+
+\subsubsection{RGB-state}\label{sec:environment-state-representation-scaling-rgb-state}
+\input{parts/chapters/environment/state-representation/scaling/rgb-state.tex}
+
+\subsubsection{Grayscale-state}\label{sec:environment-state-representation-scaling-grayscale-state}
+\input{parts/chapters/environment/state-representation/scaling/grayscale-state.tex}

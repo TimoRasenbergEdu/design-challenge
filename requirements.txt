@@ -5,3 +5,4 @@ gymnasium[accept-rom-license]
 opencv-python
 tensorflow
 keras
+stablebaselines3

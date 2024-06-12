@@ -2,10 +2,10 @@ import gymnasium as gym
 
 from stable_baselines3 import DQN
 
-env = gym.make("Acrobot-v1", render_mode="human")
+env = gym.make("ALE/Qbert-v5", render_mode="human")
 
-model = DQN("MlpPolicy", env, verbose=1)
-model.learn(total_timesteps=10000, log_interval=4)
+model = DQN("CnnPolicy", env, verbose=1)
+model.learn(total_timesteps=1000000, log_interval=4)
 
 obs, info = env.reset()
 while True:
