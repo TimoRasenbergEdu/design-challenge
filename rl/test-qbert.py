@@ -51,7 +51,7 @@ def build_model(state_shape, n_actions):
 
 
 env = gym.make("ALE/Qbert-v5", render_mode='rgb_array')
-env = ResizeObservation(env, (126, 96))
+# env = ResizeObservation(env, (126, 96))
 # env = FrameStack(env, 4)
 # env = TransposeFrame(env)
 
@@ -67,8 +67,6 @@ for i in range(1):
     while True:
         action = env.action_space.sample()
         state, reward, terminated, truncated, info = env.step(action)
-
-        print(state.shape)
 
         Image.fromarray(state).save(f'./qbert_{i}_{j}.png')
 

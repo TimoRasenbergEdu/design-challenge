@@ -1,3 +1,4 @@
+import timeit
 import numpy as np
 from gymnasium import Env
 from keras.models import Sequential
@@ -150,6 +151,7 @@ class DDQNAgent(Agent):
         targets = []
 
         batch = self.memory.sample(self.batch_size)
+        time = timeit.default_timer()
         for _, state, action, reward, next_state, done in batch:
             target = self.brain.forward(state)
             target[action] = reward
@@ -161,32 +163,49 @@ class DDQNAgent(Agent):
             states.append(state)
             targets.append(target)
 
-        return self.brain.backward(np.array(states), np.array(targets))
+        print(f'Gathered batch in {timeit.default_timer() - time} seconds.')
+
+        time = timeit.default_timer()
+        metrics = self.brain.backward(np.array(states), np.array(targets))
+        print(f'Backward pass in {timeit.default_timer() - time} seconds.')
+
+        return metrics
 
     def prioritized_experience_replay(self) -> dict[str, float]:
         if len(self.memory) < self.batch_size:
             return
 
-        states = []
-        targets = []
-        weights = []
-
         batch = self.memory.prioritized_sample(self.batch_size, self.alpha,
                                                self.beta)
-        for _, state, action, reward, next_state, done, weight in batch:
-            target = self.brain.forward(state)
+
+        time = timeit.default_timer()
+
+        states = [memory[1] for memory in batch]
+        targets = self.brain.forward_batch(states)
+
+        next_states = [memory[4] for memory in batch]
+        efrs = self.target_brain.forward_batch(next_states)
+
+        for i, (_, state, action, reward, _, done, _) in enumerate(batch):
+            target = targets[i]
             target[action] = reward
 
             if not done:
-                efr = np.amax(self.target_brain.forward(next_state))
+                efr = np.amax(efrs[i])
                 target[action] += self.gamma * efr
 
-            states.append(state)
-            targets.append(target)
-            weights.append(weight)
+            targets[i] = target
+
+        weights = [memory[6] for memory in batch]
+
+        print(f'Gathered batch in {timeit.default_timer() - time} seconds.')
+
+        time = timeit.default_timer()
 
         metrics = self.brain.backward(np.array(states), np.array(targets),
                                       weights=np.array(weights))
+
+        print(f'Backward pass in {timeit.default_timer() - time} seconds.')
 
         for i, state, action, reward, next_state, done, _ in batch:
             error = self.get_error(state, action, reward, next_state)

@@ -9,6 +9,9 @@ class Brain:
     def forward(self, state) -> np.ndarray:
         return self.model(np.array([state]))[0].numpy()
 
+    def forward_batch(self, states) -> np.ndarray:
+        return self.model(np.array(states)).numpy()
+
     def backward(self, states, targets, weights=None) -> dict[str, float]:
         return self.model.fit(states, targets, sample_weight=weights).history
 

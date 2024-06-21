@@ -6,6 +6,8 @@
 .latex/**/*.toc
 .latex/**/*.bbl
 
+*.zip
+
 .venv/
 
 __pycache__/

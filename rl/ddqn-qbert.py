@@ -1,17 +1,16 @@
-import json
 import numpy as np
 import gymnasium as gym
 from gymnasium import Env
-from gymnasium.wrappers import ResizeObservation, FrameStack, FlattenObservation
+from gymnasium.wrappers import ResizeObservation, FrameStack
 from keras import Input
 from keras.models import Sequential
 from keras.layers import Dense, Flatten, Conv2D
 from keras.optimizers import Adam
 
-# from core.agents.ddqn import DDQNAgent
-# from core.memory import SequentialMemory
-# from core.policy import BoltzmannPolicy
-from core.agents.factory import AgentFactory
+from core.agents.ddqn import DDQNAgent
+from core.memory import SequentialMemory
+from core.policy import EpsilonDecayPolicy
+# from core.agents.factory import AgentFactory
 
 
 class TransposeFrame(gym.ObservationWrapper):
@@ -30,32 +29,18 @@ class TransposeFrame(gym.ObservationWrapper):
         return np.transpose(observation, (1, 0))
 
 
-# def build_model(state_shape, n_actions):
-#     model = Sequential([
-#         Conv2D(16, (8, 8), strides=(4, 4), activation='relu',
-#                input_shape=state_shape),
-#         Conv2D(32, (4, 4), strides=(2, 2), activation='relu'),
-#         Flatten(),
-#         Dense(1024, activation='relu'),
-#         Dense(1024, activation='relu'),
-#         Dense(n_actions)
-#     ])
-
-#     model.compile(optimizer=Adam(1e-4), loss='mse')
-
-#     return model
-
-
 def build_model(state_shape, n_actions):
     model = Sequential([
-        Input(shape=state_shape),
-        Dense(1024, activation='relu'),
-        Dense(2048, activation='relu'),
-        Dense(1024, activation='relu'),
+        Conv2D(32, (8, 8), strides=(4, 4), activation='relu',
+               input_shape=state_shape),
+        Conv2D(32, (4, 4), strides=(2, 2), activation='relu'),
+        Conv2D(64, (3, 3), strides=(1, 1), activation='relu'),
+        Flatten(),
+        Dense(512, activation='relu'),
         Dense(n_actions)
     ])
 
-    model.compile(optimizer=Adam(1e-3), loss='mse')
+    model.compile(optimizer=Adam(1e-4), loss='mse')
 
     return model
 
@@ -63,13 +48,12 @@ def build_model(state_shape, n_actions):
 def create_env(id: str, size: tuple[int, int], frame_stack: int,
                visualize=False) -> Env:
     if visualize:
-        env = gym.make(id, render_mode='human', obs_type="ram")
+        env = gym.make(id, render_mode='human')
     else:
-        env = gym.make(id, obs_type="ram")
+        env = gym.make(id)
     # env = ResizeObservation(env, size)
-    env = FrameStack(env, frame_stack)
-    env = TransposeFrame(env, size, frame_stack)
-    env = FlattenObservation(env)
+    # env = FrameStack(env, frame_stack)
+    # env = TransposeFrame(env, size, frame_stack)
 
     return env
 
@@ -87,24 +71,24 @@ def reward_fn(state, info, next_state, reward, terminated, truncated,
 
 
 if __name__ == "__main__":
-    # env = create_env("ALE/Qbert-v5", (4, 128), 4)
+    env = create_env("ALE/Qbert-v5", (84, 84), 4)
 
-    # state_shape = env.observation_space.shape
-    # n_actions = env.action_space.n
+    state_shape = env.observation_space.shape
+    n_actions = env.action_space.n
 
-    # model = build_model(state_shape, n_actions)
+    model = build_model(state_shape, n_actions)
 
-    # episodes = 2000
-    # memory = SequentialMemory(100000)
-    # policy = BoltzmannPolicy(1.0, 0.1, 0.9985)
-    # agent = DDQNAgent(env, model, policy, memory, create_env,
-    #                   episodes=episodes, preprocessing=preprocess_input,
-    #                   reward_fn=reward_fn, prioritized_exp_replay=True)
+    episodes = 2000
+    memory = SequentialMemory(100000)
+    policy = EpsilonDecayPolicy(1.0, 0.05, 0.1, n_actions)
+    agent = DDQNAgent(env, model, policy, memory, create_env,
+                      episodes=episodes, preprocessing=preprocess_input,
+                      reward_fn=reward_fn, prioritized_exp_replay=True)
 
-    agent = AgentFactory.load('rl/history/10-06-2024-13-37-44',
-                              create_env=create_env,
-                              preprocessing=preprocess_input,
-                              reward_fn=reward_fn)
+    # agent = AgentFactory.load('rl/history/10-06-2024-13-37-44',
+    #                           create_env=create_env,
+    #                           preprocessing=preprocess_input,
+    #                           reward_fn=reward_fn)
 
     agent.fit()
     agent.save('rl/history', overwrite=True)
