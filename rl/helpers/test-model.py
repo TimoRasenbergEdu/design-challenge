@@ -41,7 +41,7 @@ def create_env(id: str, size: tuple[int, int], frame_stack: int,
 
 
 cum_rewards = []
-for dir in ['10-06-2024-02-29-53']:
+for dir in os.listdir('rl/history'):
     path = os.path.join('rl/history', dir)
     model = keras.models.load_model(os.path.join(path, 'model.keras'))
 

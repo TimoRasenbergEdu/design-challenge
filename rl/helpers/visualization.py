@@ -3,9 +3,11 @@ import json
 import matplotlib.pyplot as plt
 
 src_path = 'rl/history'
-# for dir in os.listdir(src_path):
-for dir in ['10-06-2024-14-18-17']:
+for dir in os.listdir(src_path):
     if dir == '.old':
+        continue
+
+    if dir != 'DDQN-500':
         continue
 
     path = os.path.join(src_path, dir)
@@ -28,7 +30,7 @@ for dir in ['10-06-2024-14-18-17']:
         rewards = []
         loss = []
         for episode in metrics:
-            rewards.append(episode['score'])
+            rewards.append(episode['cum_reward'])
 
             epsiode_loss = []
             loss_metrics = episode['metrics']

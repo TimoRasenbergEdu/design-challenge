@@ -1,2 +1,76 @@
+\Gls{per} is an extension of the \gls{dqn} algorithm that prioritizes the
+transitions based on their temporal-difference error. The transitions with
+higher temporal-difference error are sampled more frequently, which helps to
+improve the learning process. The \gls{per} algorithm uses a sum-tree data
+structure to store the transitions and their priorities. The sum-tree data
+structure allows for efficient sampling of the transitions based on their
+priorities.
+
+% \begin{algorithm}[H]
+%     \begin{algorithmic}[1]
+%         \State Initialize replay memory $D$ to capacity $N$
+%         \State Initialize sum-tree $T$ with capacity $N$
+%         \State Initialize action-value function $Q$ with random weights $\theta$
+%         \For{episode $= 1, M$}
+%             \State Initialize sequence $s_1 = \{x_1\}$ and preprocessed sequence $\phi_1 = \phi(s_1)$
+%             \For{t $= 1, T$}
+%                 \State With probability $\epsilon$ select a random action $a_t$
+%                 \State otherwise select $a_t = \argmax_a Q(\phi(s_t), a; \theta)$
+%                 \State Execute action $a_t$ in emulator and observe reward $r_t$ and image $x_{t+1}$
+%                 \State Set $s_{t+1} = s_t, a_t, x_{t+1}$ and preprocess $\phi_{t+1} = \phi(s_{t+1})$
+%                 \State Store transition $(\phi_t, a_t, r_t, \phi_{t+1})$ in $D$
+%                 \State Calculate temporal-difference error $\delta_t = r_t + \gamma \max_{a^\prime} Q(\phi_{t+1}, a^\prime; \theta) - Q(\phi_t, a_t; \theta)$
+%                 \State Update priority $p_t = |\delta_t| + \epsilon$
+%                 \State Insert transition $(\phi_t, a_t, r_t, \phi_{t+1})$ with priority $p_t$ into $T$
+%                 \State Sample random minibatch of transitions $(\phi_j, a_j, r_j, \phi_{j+1})$ from $T$
+%                 \State Set $y_j = \begin{cases}
+%                     r_j & \text{if episode terminates at step } j+1 \\
+%                     r_j + \gamma \max_{a^\prime} Q(\phi_{j+1}, a^\prime; \theta) & \text{otherwise}
+%                 \end{cases}$
+%                 \State Perform a gradient descent step on $(y_j - Q(\phi_j, a_j; \theta))^2$ with respect to the network parameters $\theta$
+%                 \State Update priority $p_j = |\delta_j| + \epsilon$
+%                 \State Update priority of transition $(\phi_j, a_j, r_j, \phi_{j+1})$ in $T$ to $p_j$
+%             \EndFor
+%         \EndFor
+%     \end{algorithmic}
+%     \caption{Prioritized Experience Replay}
+%     \label{alg:per}
+% \end{algorithm}
+
+
+\begin{algorithm}[H]
+    \begin{algorithmic}[1]
+        \State Initialize minibatch $k$, step-size $n$, replay period $K$, and
+            size $N$, exponents $\alpha$ and $\beta$, and budget $T$.
+        \State Initialize replay memory $H = \theta$, $\delta = 0$, $p_1 = 1$
+        \State Observe $S_0$ and choose $A_0 \sim \pi_\theta(S_0)$
+        \For{$t = 1$ to $T$ do}
+            \State Observe $S_t$, $R_t$, $\gamma_t$
+            \State store transition $(S_{t-1}, A_{t-1}, R_t, \gamma_t, S_t)$ in
+                $H$ with maximal priority $p_t = \max_{i \leq t} p_i$
+            \If{$t \% K = 0$}
+                \For{$j = 1$ to $k$ do}
+                    \State Sample transition $j \sim P(j) = p_j^\alpha / \sum_i p_i^\alpha$
+                    \State Compute importance-sampling weight $w_j = (N \cdot P(j))^{-\beta} / \max_i w_i$
+                    \State Compute TD-error $\delta_j = R_j + \gamma_j Q_{target}(S_j, \argmax_a Q(S_j, a)) - Q(S_{j-1}, A_{j-1})$
+                    \State Update transition priority $p_j = |\delta_j|$
+                    \State Accumulate weight-change $\delta \leftarrow \delta + w_j \cdot \delta_j \cdot \nabla_\theta Q(A_j | S_j)$
+                \EndFor
+                \State Update weights $\theta \leftarrow \theta + n \cdot \delta$, reset $\delta = 0$
+                \State From time to time, copy weights into target network $\theta_{target} \leftarrow \theta$
+            \EndIf
+            \State Choose action $A_t \sim \pi_\theta(S_t)$
+        \EndFor
+    \end{algorithmic}
+    \caption{Prioritized Experience Replay}
+    \label{alg:per}
+\end{algorithm}
+
+However, the \gls{per} algorithm has a bias that can affect the learning
+process. The bias is caused by the fact that the priorities are updated
+frequently, which can lead to overestimation of the Q-values. To address this
+issue, the \gls{per} algorithm uses importance sampling to correct the bias,
+as seen on line 10 of \cref{alg:per}.
+
 \subsubsection{Importance Sampling}\label{sec:agent-dqn-per-importance-sampling}
 \input{parts/chapters/agent/dqn/per/importance-sampling.tex}

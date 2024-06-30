@@ -1,0 +1,37 @@
+\Gls{ppo} is a more efficient and stable algorithm than \gls{dqn}, and it
+is able to learn the optimal policy faster. \gls{ppo} is a policy-based
+algorithm, which means that it learns the optimal policy directly, rather
+than learning the optimal value function. This makes it more efficient, as
+it does not have to learn the value function first, and it is also more
+stable, as it does not have to deal with the issues surrounding the
+Q-values exploding.
+
+\Gls{ppo} is based on the idea of optimizing the policy by taking small
+steps in the direction of the gradient of the policy, and then updating
+the policy using the gradient of the policy. This is done by using the
+policy gradient theorem, which states that the gradient of the policy is
+equal to the gradient of the log-probability of the action multiplied by
+the advantage function. The advantage function is the difference between
+the value function and the Q-value function, and it represents how much
+better the action is than the average action.
+
+\begin{algorithm}[H]
+    \caption{Proximal Policy Optimization}
+    \label{alg:ppo}
+    \begin{algorithmic}
+        \State Initialize policy $\pi_{\theta}$ with random weights $\theta$
+        \State Initialize value function $V_{\phi}$ with random weights $\phi$
+        \State Initialize environment $E$
+        \For{iteration = 1, 2, ...}
+            \State Collect trajectories $\tau$ using policy $\pi_{\theta}$
+            \State Compute advantages $A^{\pi_{\theta}}$
+            \State Optimize policy by taking small steps in the direction of the gradient of the policy
+            \State Update policy using the gradient of the policy
+            \State Optimize value function by taking small steps in the direction of the gradient of the value function
+            \State Update value function using the gradient of the value function
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+\subsection{Results}\label{subsec:agent-ppo-results}
+\input{parts/chapters/agent/ppo/results.tex}

@@ -76,7 +76,7 @@ def gradcam_img(img_array, model, last_conv_layer_name, alpha=0.01):
     return jet_heatmap(heatmap, img_array, alpha)
 
 
-for dir in ['10-06-2024-02-29-53']:
+for dir in os.listdir('rl/history'):
     path = os.path.join('rl/history', dir)
     model = keras.models.load_model(os.path.join(path, 'model.keras'))
 

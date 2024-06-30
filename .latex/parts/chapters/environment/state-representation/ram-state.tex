@@ -1,0 +1,22 @@
+Gymnasium also provides another representation for the Q*bert environment,
+which is the RAM state. The RAM state is a one-dimensional tensor with a size
+of 128, which represents the memory of the Atari 2600 console. The RAM state
+contains information about the game, such as the player's score, the number of
+lives, and the position of the player. The RAM state is a smaller
+representation of the environment compared to the grayscaled and \gls{rgb}
+states, which makes it easier to use in experiments.
+
+However, the state representation is not as intuitive as the grayscaled and
+\gls{rgb} states, as it does not provide a visual representation of the
+environment. This lack of visual representation may make it harder for the
+agent to learn the environment, as it does not have a direct view of the
+environment. Furthermore, the lack of visual representation also impairs the
+user's ability to visually observe the agent's behaviour, as the user cannot
+see the environment that the agent is interacting with. This also makes it
+hard to demonstrate the agent's behaviour to others.
+
+Despite these drawbacks, the RAM state is still a useful representation of the
+environment, as it provides a more compact representation of the environment
+compared to the grayscaled and \gls{rgb} states. Although this representation
+will not be used in our experiments due to the reasons mentioned above, it is
+still a valuable representation that can be used in other experiments.

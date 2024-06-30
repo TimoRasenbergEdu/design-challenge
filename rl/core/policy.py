@@ -58,7 +58,8 @@ class EpsilonDecayPolicy(Policy):
     def action(self, q_values: np.ndarray) -> int:
         epsilon_greedy = EpsilonGreedyPolicy(self.epsilon_current,
                                              self.n_actions)
-        return epsilon_greedy.action(q_values)
+        action = epsilon_greedy.action(q_values)
+        return action
 
     def update(self, step: int) -> None:
         self.epsilon_current = max(

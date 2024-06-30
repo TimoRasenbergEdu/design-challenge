@@ -1,6 +1,6 @@
 IMAGE_NAME=rl
 LOCAL_DIR=~/Documents/Fontys/S7\ \(AI\)/Design\ Challenge
-SCRIPT_NAME=rl/baselines-dqn-qbert.py
+SCRIPT_NAME=rl/ddqn-qbert.py
 
 .PHONY: build
 build:

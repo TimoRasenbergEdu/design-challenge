@@ -1,0 +1,21 @@
+The Q*bert environment contains a reward function that provides the agent
+with feedback on its actions. The reward function is a function that assigns a
+reward to the agent based on the state of the environment and the action taken
+by the agent.
+
+The reward function for the Q*bert environment is defined as follows:
+\begin{enumerate}
+    \item Q*bert changes cube to destination color: 25 points
+    \item Q*bert catches Sam: 300 points
+    \item Q*bert catches green ball: 100 points
+    \item Q*bert lures Coily off pyramid: 500 points
+    \item Bonus points for every round you complete: 3100 points
+\end{enumerate}
+
+As we can see, the rewards in the Q*bert environment are large, which may make
+it easier for the agent to differentiate between good and bad actions. However,
+the large rewards may also make it harder for the agent to learn the
+environment, as it may take longer for the agent to converge to an optimal
+policy. To address this issue, we will use reward clipping, which will clip the
+rewards to a range of -1 to 1. This clipping will reduce the scale of the
+rewards, which will make it easier for the agent to learn the environment.

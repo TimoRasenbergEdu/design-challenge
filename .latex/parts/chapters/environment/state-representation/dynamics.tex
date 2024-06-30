@@ -1,0 +1,24 @@
+Currently, the state representation is a single frame of the game, which
+contains the state of the environment at a given time. This representation is
+useful for the agent to learn the environment, as it provides information about
+the current state of the environment. However, this representation does not
+provide information about the dynamics of the environment, such as the movement
+of the enemies or the player. This lack of information may make it harder for
+the agent to learn the environment, as it does not have a complete view of the
+environment.
+
+To address this issue, we will use a sequence of frames as the state
+representation. This sequence will contain multiple frames of the game, which
+will provide information about the dynamics of the environment. By using a
+sequence of frames, the agent will be able to learn the dynamics of the
+environment, which will help it make better decisions. This representation will
+also allow the agent to learn the temporal dependencies in the environment, as
+it will be able to observe how the environment changes over time.
+
+Alongside this implementation, we will also use a frame skip of 4, which means
+that the agent will only see every fourth frame of the game. This frame skip
+will reduce the number of frames that the agent has to process, which will
+reduce the complexity of the environment representation. This reduction in
+complexity will make it easier for the agent to learn the environment, as it
+will have to process fewer frames, which in turn speeds up the training
+process.

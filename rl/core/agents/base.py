@@ -8,44 +8,32 @@ from core.brain import Brain
 
 
 class Agent:
-    def __init__(self, env_id: str, create_env, model: Sequential,
-                 policy: Policy, preprocessing=None, reward_fn=None) -> None:
-        self.env_id = env_id
+    def __init__(self, create_env, model: Sequential, policy: Policy) -> None:
         self.create_env = create_env
         self.brain = Brain(model)
         self.policy = policy
-        self.preprocessing = preprocessing
-        self.reward_fn = reward_fn
 
     def action(self, state) -> int:
-        if self.preprocessing:
-            state = self.preprocessing(state)
-
         return self.policy.action(self.brain.forward(state))
 
     def score(self, visualize=False) -> float:
         policy = GreedyPolicy()
 
         if visualize:
-            env = self.create_env(self.env_id, (126, 96), 4, render=True)
+            env = self.create_env(render=True)
         else:
-            env = self.create_env(self.env_id, (126, 96), 4)
+            env = self.create_env()
 
-        state, info = env.reset()
+        state, _ = env.reset()
 
         cum_reward = 0
         while True:
             action = policy.action(self.brain.forward(state))
-            next_state, reward, terminated, truncated, next_info = env.step(action)
-
-            if self.reward_fn is not None:
-                reward = self.reward_fn(state, info, next_state, reward,
-                                        terminated, truncated, next_info)
+            next_state, reward, terminated, truncated, _ = env.step(action)
 
             cum_reward += reward
 
             state = next_state
-            info = next_info
 
             if terminated or truncated:
                 break

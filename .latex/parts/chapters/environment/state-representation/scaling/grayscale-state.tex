@@ -1,0 +1,42 @@
+The grayscaled state is a two-dimensional tensor where each dimension
+represents the height and width of the environment, and has a size of 210x160.
+The reason for using a grayscaled state is to reduce the complexity of the
+environment representation, as the \gls{rgb} state has a large size. This
+reduction in size is created by merging the three channels of the \gls{rgb}
+state into a single channel, which results in a smaller representation of the
+environment. The grayscaled state and its scaled down version are shown in
+\cref{fig:gray-state}.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/gray-full-purple-sam.png}
+        \caption{Full state representation.}
+        \label{fig:rgb-full}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/gray-84x84-sam.png}
+        \caption{84x84 state representation.}
+        \label{fig:rgb-84x84}
+    \end{subfigure}
+    \caption{RGB state representation.}
+    \label{fig:rgb-state}
+\end{figure}
+
+As we see in \cref{fig:rgb-full}, the scaled down version of the grayscaled
+state, as shown in \cref{fig:rgb-84x84}, keeps the main features of the
+environment, such as the platforms, the enemies, and the player. One point of
+concern is that the grayscaled state may lose some information that could be
+important to the agent, such as the difference in colour of the balls. The
+environment contains two types of balls, purple and green, which have opposite
+effects on the player. The green ball increases the player's score, while the
+purple ball decreases the player's score. The grayscaled values of these
+balls are extremely close (103 and 107). However, the agent should be able to
+distinguish between these two types of balls to make the best decisions.
+
+Seeing as the grayscaled state should be able to represent the environment
+without losing important information, we will use the grayscaled state in our
+experiments. We will also use the scaled down version of the grayscaled state
+to reduce the complexity of the environment representation.

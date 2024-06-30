@@ -10,17 +10,14 @@ from core.memory import Memory
 
 class DQNAgent(Agent):
     def __init__(self, env: Env, model: Sequential, policy: Policy,
-                 memory: Memory, preprocessing=None, reward_fn=None,
-                 episodes=2000, episode_start=0, t_warm_up=0, batch_size=32,
-                 gamma=0.99, alpha=0.6, beta=0.4, replay_steps=4,
-                 prioritized_exp_replay=False) -> None:
-        super().__init__(env.spec.id, model, policy, preprocessing, reward_fn)
+                 memory: Memory, create_env, episodes=2000, episode_start=0,
+                 t_warm_up=0, batch_size=32, gamma=0.99, alpha=0.6, beta=0.4,
+                 replay_steps=4, prioritized_exp_replay=False) -> None:
+        super().__init__(create_env, model, policy)
         self.env = env
         self.brain = Brain(model)
         self.policy = policy
         self.memory = memory
-
-        self.reward_fn = reward_fn
 
         self.episodes = episodes
         self.episode_start = episode_start
@@ -37,46 +34,35 @@ class DQNAgent(Agent):
 
     def fit(self) -> None:
         try:
-            state, info = self.env.reset()
+            state, _ = self.env.reset()
             for i in range(self.t_warm_up):
                 print(f'Warm-up step {i+1}/{self.t_warm_up}.')
                 action = self.action(state)
                 step = self.env.step(action)
-                next_state, reward, terminated, truncated, next_info = step
-
-                if self.reward_fn is not None:
-                    reward = self.reward_fn(state, info, next_state,
-                                            reward, terminated, truncated,
-                                            next_info)
+                next_state, reward, terminated, truncated, _ = step
 
                 done = terminated or truncated
 
                 self.remember(state, action, reward, next_state, done)
 
                 state = next_state
-                info = next_info
 
                 if done:
-                    state, info = self.env.reset()
+                    state, _ = self.env.reset()
 
             metrics = []
             steps = 0
             for i in range(self.episodes):
                 print(f'Episode {i+1}/{self.episodes}.')
 
-                state, info = self.env.reset()
+                state, _ = self.env.reset()
 
                 episode_metrics = []
                 done = False
                 while not done:
                     action = self.action(state)
                     step = self.env.step(action)
-                    next_state, reward, terminated, truncated, next_info = step
-
-                    if self.reward_fn is not None:
-                        reward = self.reward_fn(state, info, next_state,
-                                                reward, terminated, truncated,
-                                                next_info)
+                    next_state, reward, terminated, truncated, _ = step
 
                     done = terminated or truncated
 
@@ -91,7 +77,6 @@ class DQNAgent(Agent):
                         episode_metrics.append(step_metrics)
 
                     state = next_state
-                    info = next_info
                     steps += 1
 
                 self.beta += self.beta_step
@@ -104,7 +89,7 @@ class DQNAgent(Agent):
                 score = self.score()
                 print(f'Episode score: {score}.')
 
-                self.policy.update()
+                self.policy.update(i)
                 print(f'Policy updated: {self.policy}.')
 
                 metrics.append(

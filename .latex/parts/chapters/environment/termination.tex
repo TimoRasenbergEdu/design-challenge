@@ -1,0 +1,27 @@
+In the Q*bert environment, the agent can terminate the episode by `running out
+of Q*berts', which means that the agent has lost all of its lives. When this
+happens, the agent is reset to the starting state of the environment.
+
+While this termination condition is simple, it is effective for training the
+agent, as it encourages the agent to learn how to play the game without losing
+all of its lives. This termination condition also allows the agent to learn how
+to maximize its score. However, this termination condition may make it harder
+for the agent to learn how to play the game, as the agent may not receive
+feedback on its actions until it has lost all of its lives. To combat this, we
+will truncate the number of lives the agent has to 1, which will allow the
+agent to receive feedback on its actions more frequently.
+
+By truncating the number of lives the agent has to 1, we can speed up the
+training process, as the agent will be able to learn how to play the game more
+quickly. This will allow the agent to learn how to maximize its score more
+quickly, which will result in a more effective agent.
+
+The downside of truncating the number of lives the agent has to 1, however, is
+that the agent may not learn how to deal with continuing the game after losing
+a life. To address this issue, we may want to train the agent with a single
+life, and set a step where its lives are reset to 3, and the game continues.
+This will allow the agent to learn the environment quickly with a single life,
+and then learn how to deal with continuing the game after losing a life.
+However, this approach will not be used in this project due to time
+constraints. Thus, we will grant the agent a single life, and reset the
+environment when the agent loses said life.

@@ -16,6 +16,14 @@
 
 \DeclareMathOperator{\argmax}{argmax}
 
+% Configure link colors.
+\hypersetup{
+    colorlinks,
+    linkcolor={black},
+    citecolor={black},
+    urlcolor={blue}
+}
+
 \pagestyle{fancy}
 
 \makenoidxglossaries{}
@@ -37,14 +45,17 @@
 \chapter{Enviroment Setup}\label{ch:environment-setup}
 \input{parts/chapters/environment-setup.tex}
 
-\chapter{Stable Baselines}\label{ch:stable-baselines}
-\input{parts/chapters/stable-baselines.tex}
-
 \chapter{Environment}\label{ch:environment}
 \input{parts/chapters/environment/main.tex}
 
 \chapter{Agent}\label{ch:agent}
 \input{parts/chapters/agent/main.tex}
+
+\chapter{Reflection}\label{ch:reflection}
+\input{parts/chapters/reflection.tex}
+
+\chapter{Conclusion}\label{ch:conclusion}
+\input{parts/chapters/conclusion.tex}
 
 \printnoidxglossaries{}
 

@@ -1,0 +1,20 @@
+Importance sampling is a technique used to estimate the expected value of
+a function under a different distribution. In the context of reinforcement
+learning, importance sampling is used to estimate the expected value of the
+Q-values under the target policy, given that the Q-values are estimated under
+the behavior policy. This is useful when the target policy is different from
+the behavior policy, as it allows the agent to learn how to act optimally under
+the target policy.
+
+In the context of the \gls{per} algorithm, importance sampling is used to
+correct the bias introduced by the prioritized replay. The bias is caused by
+the fact that the priorities are updated frequently, which can lead to
+overestimation of the Q-values. To correct this bias, the \gls{per} algorithm
+uses importance sampling to reweight the updates to the Q-values based on the
+importance of the transitions. This helps to reduce the bias and improve the
+stability of the learning process.
+
+The importance sampling weight is calculated as follows:
+\begin{equation}
+    w_i = \left( \frac{1}{N} \cdot \frac{1}{P(i)} \right)^{\beta}
+\end{equation}
